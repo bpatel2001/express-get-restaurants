@@ -1,5 +1,5 @@
-const db = require("./db/connection");
 const app = require("./src/app");
+const db = require("./db/connection");
 
 // TODO: Create your GET Request Route Below:
 
