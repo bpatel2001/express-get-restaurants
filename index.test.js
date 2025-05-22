@@ -46,12 +46,12 @@ describe("Test GET route", () => {
         expect(response.body.location).toBe(newRestaurant.location);
         expect(response.body.cuisine).toBe(newRestaurant.cuisine);
     })
-    it("POST /restaurants returns error key with array if name, location, or cuisine fields are empty", async () => {
-        const response = await request(app).post("/restaurants").send({name: "", location: "Houston", cuisine: "Mexican"});
+    it("POST /restaurants returns error key with array if name field is not between 10 and 30 characters", async () => {
+        const response = await request(app).post("/restaurants").send({name: "Test", location: "Houston", cuisine: "Mexican"});
         expect(response.statusCode).toBe(200);
         const responseData = JSON.parse(response.text);
-        expect(responseData).toEqual({"errors": [{"location": "body", "msg": "Invalid value", "path": "name", "type": "field", "value": ""}]}  );
-    });
+        expect(responseData).toEqual({ errors: [{ location: 'body', msg: 'Invalid value', path: 'name', type: 'field', value: 'Test' }] });
+    })
     it("PUT /restaurants/:id updates the restaurant with provided value", async () => {
         const updatedRestaurant = {
             id: 2,
