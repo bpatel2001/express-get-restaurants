@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const {Restaurant, Item, Menu} = require("../models/index");
+const { check, validationResult } = require("express-validator");
+
 const db = require("../db/connection");
 
 router.use(express.json());
@@ -35,11 +37,21 @@ router.get("/:id", async (request, response) => {
 })
 
 
-router.post("/", async (request, response) => {
+router.post("/",
+  [
+    check("name").not().isEmpty().trim(),
+    check("location").not().isEmpty().trim(),
+    check("cuisine").not().isEmpty().trim(),
+  ],
+  async (request, response) => {
+    errors = validationResult(request);
+    if (!errors.isEmpty()) {
+        return response.json({ errors: errors.array() });
+    }
     const restaurant = await Restaurant.create(request.body);
 
     response.json(restaurant);
-})
+});
 
 router.put("/:id", async (request, response) => {
     const restaurantId = request.params.id;

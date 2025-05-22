@@ -1,7 +1,7 @@
 const request = require("supertest")
 const app = require("./src/app")
 const db = require("./db/connection")
-const Restaurant = require("./models/index");
+const {Restaurant} = require("./models/index");
 
 const { execSync } = require('child_process');
 execSync('npm run seed');
@@ -46,6 +46,12 @@ describe("Test GET route", () => {
         expect(response.body.location).toBe(newRestaurant.location);
         expect(response.body.cuisine).toBe(newRestaurant.cuisine);
     })
+    it("POST /restaurants returns error key with array if name, location, or cuisine fields are empty", async () => {
+        const response = await request(app).post("/restaurants").send({name: "", location: "Houston", cuisine: "Mexican"});
+        expect(response.statusCode).toBe(200);
+        const responseData = JSON.parse(response.text);
+        expect(responseData).toEqual({"errors": [{"location": "body", "msg": "Invalid value", "path": "name", "type": "field", "value": ""}]}  );
+    });
     it("PUT /restaurants/:id updates the restaurant with provided value", async () => {
         const updatedRestaurant = {
             id: 2,
